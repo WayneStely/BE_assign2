@@ -1,4 +1,6 @@
-const http = require('http');
+const express = require('express');
+const morgan = require('morgan');
+const app = express();
 const port = 3000;
 
 const member = require('./member.js');
@@ -12,32 +14,35 @@ const about = {
     data: member
 };
 
-const server = http.createServer((req, res) => {
-    const path = req.url;
+// Middleware for logging
+app.use(morgan('dev'));
 
-    if (path === '/') {
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'text/plain');
-        res.write("This is the home page");
-        res.end();
-    } else if (path === '/about') {
-        res.statusCode = 210;
-        res.setHeader('Content-Type', 'application/json');
-        res.write(JSON.stringify(about));
-        res.end();
-    } else if (path === '/users') {
-        res.statusCode = 220;
-        res.setHeader('Content-Type', 'application/json');
-        res.write(JSON.stringify(users));
-        res.end();
-    } else {
-        res.statusCode = 404;
-        res.setHeader('Content-Type', 'text/plain');
-        res.write('404 Not Found bro hehehe salam dari Andreas');
-        res.end();
-    }
+// Route handlers
+app.get('/', (req, res) => {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain');
+    res.send("This is the home page");
 });
 
-server.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}/ program by Wayne Stely Lamansiang `);
+app.get('/about', (req, res) => {
+    res.statusCode = 210;
+    res.setHeader('Content-Type', 'application/json');
+    res.json(about);
+});
+
+app.get('/users', (req, res) => {
+    res.statusCode = 220;
+    res.setHeader('Content-Type', 'application/json');
+    res.json(users);
+});
+
+// 404 Not Found handler
+app.use((req, res) => {
+    res.statusCode = 404;
+    res.setHeader('Content-Type', 'text/plain');
+    res.send('404 Not Found bro hehehe salam dari Andreas');
+});
+
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}/ program by Wayne Stely Lamansiang`);
 });
